@@ -2,6 +2,7 @@ package net.vvoid.java.jac;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
 import org.testng.annotations.AfterClass;
@@ -33,11 +34,19 @@ public class RunCommandHelperTest {
 //    RunCmdHelper.run2(new File("c:\\"), "dir \"Program Files (x86)\"", jTextArea);
 //    RunCmdHelper.run2(new File("c:\\"), "dir ", jTextArea);
     //RunCmdHelper.run3(new File("c:\\"), "dir Applicaltions \"Program Files\"", jTextArea);
-    
+    //RunCmdHelper cmdHelper = new RunCmdHelper(new OutputStreamWriter(System.out, "UTF-16"));
+    //RunCmdHelper cmdHelper = new RunCmdHelper(new OutputStreamWriter(System.out, "ISO-8859-15"));
     RunCmdHelper cmdHelper = new RunCmdHelper(System.out);
-    cmdHelper.runCmd("echo hello world");
-    
-    
+    //cmdHelper.runCmd("echo hello world");
+    //cmdHelper.runCmd("chcp 65001");
+    cmdHelper.runCmd("chcp 1250");
+    cmdHelper.runCmd("chcp");
+    cmdHelper.runCmd("dir %HOME%\\delme");
+    cmdHelper.runCmd("echo hello world, öäüÖÄÜ");
+
+    Thread.sleep(1000);
+    System.out.println("");
+    System.out.println("encoding: " + new OutputStreamWriter(System.out).getEncoding());
 
   }
 

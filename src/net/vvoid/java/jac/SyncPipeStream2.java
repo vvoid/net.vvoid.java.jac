@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class SyncPipe implements Runnable {
+public class SyncPipeStream2 implements Runnable {
 
   private OutputStream outputStream;
   private InputStream inputStream;
@@ -34,7 +34,7 @@ public class SyncPipe implements Runnable {
     this.active = active;
   }
 
-  public SyncPipe(InputStream inputStream, OutputStream outputStream) {
+  public SyncPipeStream2(InputStream inputStream, OutputStream outputStream) {
     this.inputStream = inputStream;
     this.outputStream = outputStream;
     this.active = true;

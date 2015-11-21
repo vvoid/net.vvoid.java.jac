@@ -3,6 +3,7 @@ package net.vvoid.java.jac;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,7 +26,12 @@ public class CommandTabjPanel extends javax.swing.JPanel {
     historyjTable.setModel(historyManager);
 
     cmdHelper = new RunCmdHelper(new OutputStreamToTextArea(outputTextArea));
-    cmdHelper.setWorrkingDirectory(new File(System.getProperty("user.dir", "C:\\")));
+
+    //cmdHelper = new RunCmdHelper(new TextAreaOutputStream(outputTextArea));
+    //cmdHelper = new RunCmdHelper(new PrintStreamCapturer(outputTextArea));
+    
+    
+    cmdHelper.setWorkingDirectory(new File(System.getProperty("user.dir", "C:\\")));
 
     currentDirectoryjLabel.setText(cmdHelper.getWorkingDirectory().getCanonicalPath());
 
@@ -124,6 +130,11 @@ public class CommandTabjPanel extends javax.swing.JPanel {
     historyjTable.setRequestFocusEnabled(false);
     historyjTable.setShowHorizontalLines(false);
     historyjTable.setShowVerticalLines(false);
+    historyjTable.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        historyjTableMouseClicked(evt);
+      }
+    });
     historyjScrollPane.setViewportView(historyjTable);
 
     verticaljSplitPane.setRightComponent(historyjScrollPane);
@@ -224,7 +235,7 @@ public class CommandTabjPanel extends javax.swing.JPanel {
           cmdHelper.runCmd(cmd);
           commandjTextField.setText("");
           historyManager.resetPosition();
-          currentDirectoryjLabel.setText(cmdHelper.getCmdWorkingDirectory());
+          //currentDirectoryjLabel.setText(cmdHelper.getCmdWorkingDirectory());
         }
       }
       break;
@@ -234,6 +245,10 @@ public class CommandTabjPanel extends javax.swing.JPanel {
     }
 
   }//GEN-LAST:event_commandjTextFieldKeyPressed
+
+  private void historyjTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_historyjTableMouseClicked
+    //commandjTextField.setText("");
+  }//GEN-LAST:event_historyjTableMouseClicked
 
   @Override
   public void setVisible(boolean aFlag) {
