@@ -1,9 +1,9 @@
 package net.vvoid.java.jac;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JDialog;
 
 /**
  *
@@ -17,8 +17,12 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
   public JustAConsoleGUI() throws IOException {
     initComponents();
 
-    CommandTabjPanel commandTabjPanel = new CommandTabjPanel();
-    jTabbedPane1.add(commandTabjPanel);
+    new Cfg().readCfg();
+    for (String tab : Cfg.cfg.tabs) {
+      CommandTabjPanel commandTabjPanel = new CommandTabjPanel(new HistoryManager(new File(Cfg.cfg.historyFilePrefix + Cfg.cfg.tabs.size())));
+      commandTabjPanel.setName(tab);
+      cmdRunnerjTabbedPane.add(commandTabjPanel);
+    }
 
   }
 
@@ -29,7 +33,7 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jTabbedPane1 = new javax.swing.JTabbedPane();
+    cmdRunnerjTabbedPane = new javax.swing.JTabbedPane();
     menuBar = new javax.swing.JMenuBar();
     fileMenu = new javax.swing.JMenu();
     saveMenuItem = new javax.swing.JMenuItem();
@@ -48,15 +52,14 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
     setTitle("Just a Console");
     setBackground(new java.awt.Color(255, 51, 51));
     setMinimumSize(new java.awt.Dimension(640, 480));
-    setPreferredSize(new java.awt.Dimension(640, 480));
     addWindowListener(new java.awt.event.WindowAdapter() {
       public void windowClosed(java.awt.event.WindowEvent evt) {
         formWindowClosed(evt);
       }
     });
 
-    jTabbedPane1.setDoubleBuffered(true);
-    getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+    cmdRunnerjTabbedPane.setDoubleBuffered(true);
+    getContentPane().add(cmdRunnerjTabbedPane, java.awt.BorderLayout.CENTER);
 
     fileMenu.setMnemonic('f');
     fileMenu.setText("File");
@@ -149,8 +152,8 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
 
   private void exit() {
 
-    for (int i = 0; i < jTabbedPane1.getTabCount(); i++) {
-      CommandTabjPanel commandTabjPanel = (CommandTabjPanel) jTabbedPane1.getComponentAt(i);
+    for (int i = 0; i < cmdRunnerjTabbedPane.getTabCount(); i++) {
+      CommandTabjPanel commandTabjPanel = (CommandTabjPanel) cmdRunnerjTabbedPane.getComponentAt(i);
       commandTabjPanel.exit();
     }
 
@@ -199,6 +202,7 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
+  private javax.swing.JTabbedPane cmdRunnerjTabbedPane;
   private javax.swing.JMenuItem contentsMenuItem;
   private javax.swing.JMenuItem copyMenuItem;
   private javax.swing.JMenuItem cutMenuItem;
@@ -207,7 +211,6 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
   private javax.swing.JMenuItem exitMenuItem;
   private javax.swing.JMenu fileMenu;
   private javax.swing.JMenu helpMenu;
-  private javax.swing.JTabbedPane jTabbedPane1;
   private javax.swing.JMenuBar menuBar;
   private javax.swing.JMenuItem pasteMenuItem;
   private javax.swing.JMenuItem saveAsMenuItem;

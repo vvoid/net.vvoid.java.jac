@@ -20,19 +20,21 @@ import javax.swing.table.AbstractTableModel;
  */
 public class HistoryManager extends AbstractTableModel {
 
-  public static final File historyFile = new File(System.getProperty("user.home"), ".jac.history");
+  public final File historyFile;
 
   public final Integer maxEntries;
 
   List<String> commandHistory = new ArrayList<>();
   Integer historyPosition = Positions.ILLEGAL.index;
 
-  public HistoryManager() {
-    maxEntries = 5;
+  public HistoryManager(File historyFile) {
+    this.historyFile = historyFile;
+    maxEntries = 5000;
     init();
   }
 
-  public HistoryManager(Integer maxEntries) throws IOException {
+  public HistoryManager(File historyFile, Integer maxEntries) throws IOException {
+    this.historyFile = historyFile;
     this.maxEntries = maxEntries;
     init();
   }
@@ -98,7 +100,12 @@ public class HistoryManager extends AbstractTableModel {
   }
 
   public void add(String cmd) {
-    if (!(commandHistory.size() < maxEntries)) {
+
+    if (!commandHistory.isEmpty() && commandHistory.get(commandHistory.size() - 1).contentEquals(cmd)) {
+      return;
+    }
+
+    if (commandHistory.size() >= maxEntries) {
       commandHistory.remove(0);
     }
     commandHistory.add(cmd);

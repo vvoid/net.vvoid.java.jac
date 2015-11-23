@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,8 +27,10 @@ public class RunCmdHelper {
   //public RunCmdHelper(OutputStream outputStream, JTextArea outputTextArea) throws IOException {
   public RunCmdHelper(OutputStream outputStream) throws IOException {
 
+    /**
+     * with this unicode setup the output encoding is Cp1250 and input encoding is Cp850! YooHoo M$...
+     */
     processBuilder = new ProcessBuilder(System.getProperty("net.vvoid.java.jac.cmdPath", "C:\\Windows\\System32\\cmd.exe"), "/U", "/K");
-    //processBuilder = new ProcessBuilder(System.getProperty("net.vvoid.java.jac.cmdPath", "C:\\Windows\\System32\\cmd.exe"));
     processBuilder.inheritIO();
     processBuilder.redirectErrorStream(true);
     processBuilder.redirectInput(ProcessBuilder.Redirect.PIPE);
@@ -36,15 +39,12 @@ public class RunCmdHelper {
 
     Process process = processBuilder.start();
 
-    //cmdOutput = new OutputStreamWriter(process.getOutputStream());
-    //cmdOutput = new OutputStreamWriter(process.getOutputStream(), "Cp1250");
     cmdOutput = new OutputStreamWriter(process.getOutputStream(), "850");
 
     syncPipe = new SyncPipeStream(process.getInputStream(), outputStream);
     syncPipeThread = new Thread(syncPipe);
     syncPipeThread.start();
 
-    //PrintStreamCapturer printStreamCapturer = new PrintStreamCapturer(outputTextArea, new PrintStream(outputStream, true));
   }
 
   public void runCmd(String commandLine) {
@@ -73,19 +73,35 @@ public class RunCmdHelper {
   }
 
   public String getCmdWorkingDirectory() {
-    String dir = "";
-
-    syncPipe.setActive(false);
-    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(syncPipe.getInputStream()));
     try {
+      String dir = "";
+
+      Charset charset = Charset.forName("Cp1250");
+
+      //syncPipe.setActive(false);
+
+      InputStreamReader isr = new InputStreamReader(syncPipe.getInputStream(), charset);
+
       cmdOutput.append("echo %CD%\n").flush();
-      dir = bufferedReader.readLine();
+//      while (isr.ready()) {
+//        System.out.print(isr.read());
+//      }
+//      System.out.println("");
+
+//    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(syncPipe.getInputStream(), charset));
+//    try {
+//      cmdOutput.append("echo %CD%\n").flush();
+//      dir = bufferedReader.readLine();
+//    } catch (IOException ex) {
+//      Logger.getLogger(RunCmdHelper.class.getName()).log(Level.SEVERE, null, ex);
+//    }
+      syncPipe.setActive(true);
+      return dir;
     } catch (IOException ex) {
       Logger.getLogger(RunCmdHelper.class.getName()).log(Level.SEVERE, null, ex);
     }
 
-    syncPipe.setActive(true);
-    return dir;
+    return null;
   }
 
 }

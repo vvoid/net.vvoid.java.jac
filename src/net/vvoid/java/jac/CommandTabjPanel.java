@@ -13,14 +13,15 @@ import java.util.logging.Logger;
  */
 public class CommandTabjPanel extends javax.swing.JPanel {
 
-  HistoryManager historyManager = new HistoryManager();
+  private final HistoryManager historyManager;
 
   RunCmdHelper cmdHelper;
 
   /**
    * Creates new form NewJPanel
    */
-  public CommandTabjPanel() throws IOException {
+  public CommandTabjPanel(HistoryManager historyManager) throws IOException {
+    this.historyManager = historyManager;
     initComponents();
 
     historyjTable.setModel(historyManager);
@@ -29,8 +30,6 @@ public class CommandTabjPanel extends javax.swing.JPanel {
 
     //cmdHelper = new RunCmdHelper(new TextAreaOutputStream(outputTextArea));
     //cmdHelper = new RunCmdHelper(new PrintStreamCapturer(outputTextArea));
-    
-    
     cmdHelper.setWorkingDirectory(new File(System.getProperty("user.dir", "C:\\")));
 
     currentDirectoryjLabel.setText(cmdHelper.getWorkingDirectory().getCanonicalPath());
@@ -235,7 +234,7 @@ public class CommandTabjPanel extends javax.swing.JPanel {
           cmdHelper.runCmd(cmd);
           commandjTextField.setText("");
           historyManager.resetPosition();
-          //currentDirectoryjLabel.setText(cmdHelper.getCmdWorkingDirectory());
+          currentDirectoryjLabel.setText(cmdHelper.getCmdWorkingDirectory());
         }
       }
       break;
