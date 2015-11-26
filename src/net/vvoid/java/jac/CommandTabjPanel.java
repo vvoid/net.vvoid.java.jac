@@ -3,6 +3,8 @@ package net.vvoid.java.jac;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,6 +16,8 @@ public class CommandTabjPanel extends javax.swing.JPanel {
 
   private final HistoryManager historyManager;
   private final RunCmdHelper cmdHelper;
+
+  private Set<Integer> keysPressed = new HashSet<>();
 
   public HistoryManager getHistoryManager() {
     return historyManager;
@@ -87,6 +91,9 @@ public class CommandTabjPanel extends javax.swing.JPanel {
     commandjTextField.addKeyListener(new java.awt.event.KeyAdapter() {
       public void keyPressed(java.awt.event.KeyEvent evt) {
         commandjTextFieldKeyPressed(evt);
+      }
+      public void keyReleased(java.awt.event.KeyEvent evt) {
+        commandjTextFieldKeyReleased(evt);
       }
     });
     commandjScrollPane.setViewportView(commandjTextField);
@@ -200,12 +207,14 @@ public class CommandTabjPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_commandjTextFieldActionPerformed
 
   private void commandjTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_commandjTextFieldKeyPressed
+    Integer key = evt.getKeyCode();
+    keysPressed.add(key);
 
-//    System.out.println("evt.getKeyCode()=" + evt.getKeyCode());
+//    System.out.println("evt.getKeyCode()=" + key);
 //    System.out.println("historyManager.getHistoryPosition()=" + historyManager.getHistoryPosition());
 //    System.out.println("historyManager.getRowCount()=" + historyManager.getRowCount());
-    switch (evt.getKeyCode()) {
-      case KeyEvent.VK_UP:
+    switch (key) {
+      case KeyEvent.VK_UP: {
 
         commandjTextField.setText(historyManager.up());
         try {
@@ -216,8 +225,8 @@ public class CommandTabjPanel extends javax.swing.JPanel {
         }
 
         break;
-
-      case KeyEvent.VK_DOWN:
+      }
+      case KeyEvent.VK_DOWN: {
         commandjTextField.setText(historyManager.down());
         try {
           historyjTable.setRowSelectionAllowed(true);
@@ -227,15 +236,13 @@ public class CommandTabjPanel extends javax.swing.JPanel {
         }
 
         break;
-
-      case KeyEvent.VK_TAB:
-        System.out.println("" + evt.getKeyCode());
+      }
+      case KeyEvent.VK_TAB: {
+        System.out.println("" + key);
         break;
-
+      }
       case KeyEvent.VK_ENTER: {
         String cmd = commandjTextField.getText();
-
-        System.out.println("cmd: '" + cmd + "'");
 
         if (!cmd.isEmpty()) {
           historyManager.add(cmd);
@@ -243,13 +250,42 @@ public class CommandTabjPanel extends javax.swing.JPanel {
           commandjTextField.setText("");
           historyManager.resetPosition();
           historyjTable.changeSelection(historyManager.getHistoryPosition(), 0, false, false);
+          return;
         }
       }
       break;
 
       default:
-        System.out.println("" + evt.getKeyCode());
+        if (keysPressed.contains(KeyEvent.VK_CONTROL) && (key != KeyEvent.VK_CONTROL)) {
+          switch (key) {
+            case KeyEvent.VK_C: {
+              cmdHelper.runCmd(Character.toString((char) 0x03));
+              commandjTextField.setText("");
+              historyManager.resetPosition();
+              historyjTable.changeSelection(historyManager.getHistoryPosition(), 0, false, false);
+
+              break;
+            }
+
+            case KeyEvent.VK_R: {
+              System.out.println("search in history not implementet yet...");
+
+              break;
+            }
+
+            case KeyEvent.VK_Q: {
+              saveHistory();
+              System.exit(0);
+              break;
+            }
+
+            default:
+
+          }
+        }
+
     }
+
 
   }//GEN-LAST:event_commandjTextFieldKeyPressed
 
@@ -260,6 +296,10 @@ public class CommandTabjPanel extends javax.swing.JPanel {
   private void historyjTableKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_historyjTableKeyTyped
     historyjTable.scrollRectToVisible(historyjTable.getVisibleRect());
   }//GEN-LAST:event_historyjTableKeyTyped
+
+  private void commandjTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_commandjTextFieldKeyReleased
+    keysPressed.remove(evt.getKeyCode());
+  }//GEN-LAST:event_commandjTextFieldKeyReleased
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JScrollPane commandjScrollPane;
