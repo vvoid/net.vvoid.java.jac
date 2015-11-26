@@ -45,7 +45,7 @@ public class SyncPipeWriter implements Runnable {
 
   public SyncPipeWriter(InputStream inputStream, OutputStream outputStream) throws UnsupportedEncodingException {
     this.inputStreamReader = new InputStreamReader(inputStream, "ISO-8859-15");
-   this.outputStreamWriter = new OutputStreamWriter(outputStream, "ISO-8859-15");
+    this.outputStreamWriter = new OutputStreamWriter(outputStream, "ISO-8859-15");
     //this.inputStreamReader = new InputStreamReader(inputStream, "UTF-16");
     //this.outputStreamWriter = new OutputStreamWriter(outputStream, "UTF-16");
     this.active = true;
@@ -73,14 +73,14 @@ public class SyncPipeWriter implements Runnable {
     try {
       final char[] buffer = new char[1024];
       //while (true) {
-        for (int length = 0; -1 != (length = inputStreamReader.read(buffer));) {
-          if (active) {
-            outputStreamWriter.write(buffer, 0, length);
-            outputStreamWriter.flush();
-          } else {
-            Thread.sleep(100);
-          }
+      for (int length = 0; -1 != (length = inputStreamReader.read(buffer));) {
+        if (active) {
+          outputStreamWriter.write(buffer, 0, length);
+          outputStreamWriter.flush();
+        } else {
+          Thread.sleep(100);
         }
+      }
 //        Thread.sleep(100);
 //      }
     } catch (IOException | InterruptedException e) {

@@ -79,7 +79,6 @@ public class RunCmdHelper {
       Charset charset = Charset.forName("Cp1250");
 
       //syncPipe.setActive(false);
-
       InputStreamReader isr = new InputStreamReader(syncPipe.getInputStream(), charset);
 
       cmdOutput.append("echo %CD%\n").flush();

@@ -9,7 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.AbstractTableModel;
@@ -20,21 +19,21 @@ import javax.swing.table.AbstractTableModel;
  */
 public class HistoryManager extends AbstractTableModel {
 
-  public final File historyFile;
+  public File historyFile;
 
   public final Integer maxEntries;
 
   List<String> commandHistory = new ArrayList<>();
-  Integer historyPosition = Positions.ILLEGAL.index;
+  Integer historyPosition;
 
-  public HistoryManager(File historyFile) {
-    this.historyFile = historyFile;
+  public HistoryManager(String tabName) {
+    this.historyFile = new File(Cfg.cfg.historyFilePrefix + tabName);
     maxEntries = 5000;
     init();
   }
 
-  public HistoryManager(File historyFile, Integer maxEntries) throws IOException {
-    this.historyFile = historyFile;
+  public HistoryManager(String tabName, Integer maxEntries) throws IOException {
+    this.historyFile = new File(Cfg.cfg.historyFilePrefix + tabName);
     this.maxEntries = maxEntries;
     init();
   }
@@ -75,8 +74,7 @@ public class HistoryManager extends AbstractTableModel {
       Logger.getLogger(HistoryManager.class.getName()).log(Level.SEVERE, null, ex);
     }
 
-    historyPosition = Positions.CURRENT.index;
-
+    historyPosition = commandHistory.size() - 1;
   }
 
   @Override
@@ -117,84 +115,54 @@ public class HistoryManager extends AbstractTableModel {
     commandHistory.remove(i);
   }
 
-  public enum Positions {
-
-    ILLEGAL(-666),
-    OLDEST(0),
-    CURRENT(Integer.MIN_VALUE);
-
-    private final Integer index;
-
-    public final Integer index() {
-      return index;
+  public boolean isLegalPosition(Integer position) {
+    if (position < 0) {
+      return false;
+    }
+    if (position > commandHistory.size() - 1) {
+      return false;
     }
 
-    Positions(Integer integer) {
-      index = integer;
-    }
+    return true;
   }
 
-  public String up() {
+  public String upOrDown(boolean up) {
     String result = "";
+    Integer newPosition = historyPosition;
+    if (up) {
+      newPosition--;
+    } else {
+      newPosition++;
+    }
 
-    if (Objects.equals(historyPosition, Positions.ILLEGAL.index)) {
-      result = "";
-
-    } else if (historyPosition == Positions.CURRENT.index) {
-      historyPosition = commandHistory.size() - 1;
-      result = commandHistory.get(historyPosition);
-
-    } else if (historyPosition > (commandHistory.size() - 1)) {
-      historyPosition = commandHistory.size() - 1;
-      result = commandHistory.get(historyPosition);
-
-    } else if (historyPosition <= 0) {
+    if (newPosition <= 0) {
+      // underflow
       historyPosition = 0;
       result = commandHistory.get(0);
 
-    } else if (Objects.equals(historyPosition, Positions.OLDEST.index)) {
-      result = commandHistory.get(0);
+    } else if (newPosition >= (commandHistory.size() - 1)) {
+      // overflow
+      historyPosition = commandHistory.size() - 1;
+      result = commandHistory.get(commandHistory.size() - 1);
 
     } else {
-      historyPosition--;
+      historyPosition = newPosition;
       result = commandHistory.get(historyPosition);
-    }
 
-    //System.out.println("" + commandHistory + " -> " + result + " @ " + historyPosition);
+    }
     return result;
+  }
+
+  public String up() {
+    return upOrDown(true);
   }
 
   public String down() {
-    String result = "";
-
-    if (Objects.equals(historyPosition, Positions.ILLEGAL.index)) {
-      result = "";
-
-    } else if (historyPosition == Positions.CURRENT.index) {
-      result = "";
-
-    } else if (historyPosition >= (commandHistory.size() - 1)) {
-      historyPosition = Positions.CURRENT.index;
-      result = "";
-
-    } else if (historyPosition <= 0) {
-      historyPosition = 1;
-      result = commandHistory.get(1);
-
-    } else if (Objects.equals(historyPosition, Positions.OLDEST.index)) {
-      result = commandHistory.get(0);
-
-    } else {
-      historyPosition++;
-      result = commandHistory.get(historyPosition);
-    }
-
-    //System.out.println("" + commandHistory + " -> " + result + " @ " + historyPosition);
-    return result;
+    return upOrDown(false);
   }
 
   public void resetPosition() {
-    historyPosition = Positions.CURRENT.index;
+    historyPosition = commandHistory.size() - 1;
   }
 
   public void writeHistoryFile() throws IOException {
@@ -204,9 +172,21 @@ public class HistoryManager extends AbstractTableModel {
         bufferedWriter.write(cmd);
         bufferedWriter.newLine();
       }
-      bufferedWriter.flush();
+      bufferedWriter.close();
     }
 
+  }
+
+  public void close() throws IOException {
+    writeHistoryFile();
+    historyFile = null;
+  }
+
+  public void rename(String tabName) {
+    File oldFile = historyFile;
+    File newFile = new File(Cfg.cfg.historyFilePrefix + tabName);
+    oldFile.renameTo(newFile);
+    this.historyFile = newFile;
   }
 
   public Integer getHistoryPosition() {

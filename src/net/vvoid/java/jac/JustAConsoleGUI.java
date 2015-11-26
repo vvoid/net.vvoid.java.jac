@@ -1,9 +1,13 @@
 package net.vvoid.java.jac;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -19,11 +23,48 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
 
     new Cfg().readCfg();
     for (String tab : Cfg.cfg.tabs) {
-      CommandTabjPanel commandTabjPanel = new CommandTabjPanel(new HistoryManager(new File(Cfg.cfg.historyFilePrefix + Cfg.cfg.tabs.size())));
+      CommandTabjPanel commandTabjPanel = new CommandTabjPanel(new HistoryManager(tab));
       commandTabjPanel.setName(tab);
       cmdRunnerjTabbedPane.add(commandTabjPanel);
+
     }
 
+    cmdRunnerjTabbedPane.setComponentPopupMenu(tabjPopupMenu);
+    clearCmdAndFocus();
+
+    ChangeListener changeListener = new ChangeListener() {
+      @Override
+      public void stateChanged(ChangeEvent changeEvent) {
+
+        SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            CommandTabjPanel commandTabjPanel = clearCmdAndFocus();
+
+            JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
+            int index = sourceTabbedPane.getSelectedIndex();
+//            System.out.println("Tab changed to: " + sourceTabbedPane.getTitleAt(index));
+//            System.out.println("shown " + commandTabjPanel.getName() + " " + commandTabjPanel.commandjTextField.hashCode());
+          }
+        });
+
+      }
+
+    };
+
+    cmdRunnerjTabbedPane.addChangeListener(changeListener);
+
+  }
+
+  public CommandTabjPanel clearCmdAndFocus() {
+    CommandTabjPanel commandTabjPanel = (CommandTabjPanel) cmdRunnerjTabbedPane.getSelectedComponent();
+    String txt = commandTabjPanel.commandjTextField.getText();
+    commandTabjPanel.commandjTextField.setText("                                                                                       ");
+    commandTabjPanel.commandjTextField.setText(txt);
+    commandTabjPanel.commandjTextField.requestFocusInWindow();
+
+    cmdRunnerjTabbedPane.repaint();
+
+    return commandTabjPanel;
   }
 
   /**
@@ -33,61 +74,24 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    cmdRunnerjTabbedPane = new javax.swing.JTabbedPane();
-    menuBar = new javax.swing.JMenuBar();
-    fileMenu = new javax.swing.JMenu();
-    saveMenuItem = new javax.swing.JMenuItem();
-    saveAsMenuItem = new javax.swing.JMenuItem();
-    exitMenuItem = new javax.swing.JMenuItem();
     editMenu = new javax.swing.JMenu();
     cutMenuItem = new javax.swing.JMenuItem();
     copyMenuItem = new javax.swing.JMenuItem();
     pasteMenuItem = new javax.swing.JMenuItem();
     deleteMenuItem = new javax.swing.JMenuItem();
+    tabjPopupMenu = new javax.swing.JPopupMenu();
+    newjMenuItem = new javax.swing.JMenuItem();
+    renamejMenuItem = new javax.swing.JMenuItem();
+    deletejMenuItem = new javax.swing.JMenuItem();
+    cmdRunnerjTabbedPane = new javax.swing.JTabbedPane();
+    menuBar = new javax.swing.JMenuBar();
+    fileMenu = new javax.swing.JMenu();
+    jMenuItem1 = new javax.swing.JMenuItem();
+    saveMenuItem = new javax.swing.JMenuItem();
+    exitMenuItem = new javax.swing.JMenuItem();
     helpMenu = new javax.swing.JMenu();
     contentsMenuItem = new javax.swing.JMenuItem();
     aboutMenuItem = new javax.swing.JMenuItem();
-
-    setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-    setTitle("Just a Console");
-    setBackground(new java.awt.Color(255, 51, 51));
-    setMinimumSize(new java.awt.Dimension(640, 480));
-    addWindowListener(new java.awt.event.WindowAdapter() {
-      public void windowClosed(java.awt.event.WindowEvent evt) {
-        formWindowClosed(evt);
-      }
-    });
-
-    cmdRunnerjTabbedPane.setDoubleBuffered(true);
-    getContentPane().add(cmdRunnerjTabbedPane, java.awt.BorderLayout.CENTER);
-
-    fileMenu.setMnemonic('f');
-    fileMenu.setText("File");
-
-    saveMenuItem.setMnemonic('s');
-    saveMenuItem.setText("Save");
-    saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        saveMenuItemActionPerformed(evt);
-      }
-    });
-    fileMenu.add(saveMenuItem);
-
-    saveAsMenuItem.setMnemonic('a');
-    saveAsMenuItem.setText("Save As ...");
-    saveAsMenuItem.setDisplayedMnemonicIndex(5);
-    fileMenu.add(saveAsMenuItem);
-
-    exitMenuItem.setMnemonic('x');
-    exitMenuItem.setText("Exit");
-    exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        exitMenuItemActionPerformed(evt);
-      }
-    });
-    fileMenu.add(exitMenuItem);
-
-    menuBar.add(fileMenu);
 
     editMenu.setMnemonic('e');
     editMenu.setText("Edit");
@@ -108,7 +112,81 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
     deleteMenuItem.setText("Delete");
     editMenu.add(deleteMenuItem);
 
-    menuBar.add(editMenu);
+    newjMenuItem.setText("new");
+    newjMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        newjMenuItemActionPerformed(evt);
+      }
+    });
+    tabjPopupMenu.add(newjMenuItem);
+
+    renamejMenuItem.setText("rename");
+    renamejMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        renamejMenuItemActionPerformed(evt);
+      }
+    });
+    tabjPopupMenu.add(renamejMenuItem);
+
+    deletejMenuItem.setText("delete");
+    deletejMenuItem.setToolTipText("");
+    deletejMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        deletejMenuItemActionPerformed(evt);
+      }
+    });
+    tabjPopupMenu.add(deletejMenuItem);
+
+    setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+    setTitle("Just a Console");
+    setBackground(new java.awt.Color(255, 51, 51));
+    setMinimumSize(new java.awt.Dimension(640, 480));
+    setPreferredSize(new java.awt.Dimension(640, 480));
+    addWindowListener(new java.awt.event.WindowAdapter() {
+      public void windowClosed(java.awt.event.WindowEvent evt) {
+        formWindowClosed(evt);
+      }
+    });
+
+    cmdRunnerjTabbedPane.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
+    cmdRunnerjTabbedPane.setDoubleBuffered(true);
+    cmdRunnerjTabbedPane.setFocusable(false);
+    cmdRunnerjTabbedPane.addComponentListener(new java.awt.event.ComponentAdapter() {
+      public void componentShown(java.awt.event.ComponentEvent evt) {
+        cmdRunnerjTabbedPaneComponentShown(evt);
+      }
+    });
+
+    fileMenu.setMnemonic('f');
+    fileMenu.setText("File");
+
+    jMenuItem1.setText("New Tab");
+    jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jMenuItem1ActionPerformed(evt);
+      }
+    });
+    fileMenu.add(jMenuItem1);
+
+    saveMenuItem.setMnemonic('s');
+    saveMenuItem.setText("Save History");
+    saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        saveMenuItemActionPerformed(evt);
+      }
+    });
+    fileMenu.add(saveMenuItem);
+
+    exitMenuItem.setMnemonic('x');
+    exitMenuItem.setText("Exit / Quit");
+    exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        exitMenuItemActionPerformed(evt);
+      }
+    });
+    fileMenu.add(exitMenuItem);
+
+    menuBar.add(fileMenu);
 
     helpMenu.setMnemonic('h');
     helpMenu.setText("Help");
@@ -130,6 +208,17 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
 
     setJMenuBar(menuBar);
 
+    javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+    getContentPane().setLayout(layout);
+    layout.setHorizontalGroup(
+      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addComponent(cmdRunnerjTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
+    );
+    layout.setVerticalGroup(
+      layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addComponent(cmdRunnerjTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
+    );
+
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
@@ -142,19 +231,95 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
   }//GEN-LAST:event_formWindowClosed
 
   private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
-    // TODO add your handling code here:
+    for (int i = 0; i < cmdRunnerjTabbedPane.getTabCount(); i++) {
+      CommandTabjPanel commandTabjPanel = (CommandTabjPanel) cmdRunnerjTabbedPane.getComponentAt(i);
+      commandTabjPanel.saveHistory();
+    }
   }//GEN-LAST:event_saveMenuItemActionPerformed
 
   private void aboutMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutMenuItemActionPerformed
     AboutJFrame aboutJFrame = new AboutJFrame();
-    aboutJFrame.show();
+    aboutJFrame.setVisible(true);
   }//GEN-LAST:event_aboutMenuItemActionPerformed
+
+  private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    CommandTabjPanel commandTabjPanel = null;
+    try {
+      commandTabjPanel = new CommandTabjPanel(new HistoryManager("" + Cfg.cfg.tabs.size()));
+    } catch (IOException ex) {
+      Logger.getLogger(JustAConsoleGUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    commandTabjPanel.setName("" + cmdRunnerjTabbedPane.getTabCount());
+    cmdRunnerjTabbedPane.add(commandTabjPanel);
+  }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+  private void renamejMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_renamejMenuItemActionPerformed
+    int i = cmdRunnerjTabbedPane.getSelectedIndex();
+    CommandTabjPanel commandTabjPanel = (CommandTabjPanel) cmdRunnerjTabbedPane.getSelectedComponent();
+
+    String name = (String) JOptionPane.showInputDialog(
+      null,
+      "rename to:",
+      "Customized Dialog",
+      JOptionPane.PLAIN_MESSAGE,
+      null,
+      null,
+      ""
+    );
+
+    System.out.println("name: " + name);
+
+    if ((name != null) && (name.length() > 0)) {
+      commandTabjPanel.setName(name);
+      commandTabjPanel.getHistoryManager().rename(name);
+      cmdRunnerjTabbedPane.setTitleAt(i, name);
+    }
+
+  }//GEN-LAST:event_renamejMenuItemActionPerformed
+
+  private void deletejMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletejMenuItemActionPerformed
+    CommandTabjPanel commandTabjPanel = (CommandTabjPanel) cmdRunnerjTabbedPane.getSelectedComponent();
+    try {
+      commandTabjPanel.getHistoryManager().close();
+    } catch (IOException ex) {
+      Logger.getLogger(JustAConsoleGUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    cmdRunnerjTabbedPane.remove(commandTabjPanel);
+
+  }//GEN-LAST:event_deletejMenuItemActionPerformed
+
+  private void newjMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newjMenuItemActionPerformed
+    try {
+      int newTabCount = cmdRunnerjTabbedPane.getTabCount() + 1;
+      CommandTabjPanel commandTabjPanel = new CommandTabjPanel(new HistoryManager("" + newTabCount));
+      commandTabjPanel.setName("" + newTabCount);
+      cmdRunnerjTabbedPane.add(commandTabjPanel);
+      cmdRunnerjTabbedPane.setSelectedComponent(commandTabjPanel);
+
+    } catch (IOException ex) {
+      Logger.getLogger(JustAConsoleGUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }//GEN-LAST:event_newjMenuItemActionPerformed
+
+  private void cmdRunnerjTabbedPaneComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_cmdRunnerjTabbedPaneComponentShown
+    System.out.println("shown");
+
+    cmdRunnerjTabbedPane.repaint();
+  }//GEN-LAST:event_cmdRunnerjTabbedPaneComponentShown
 
   private void exit() {
 
+    Cfg.cfg.tabs.clear();
     for (int i = 0; i < cmdRunnerjTabbedPane.getTabCount(); i++) {
       CommandTabjPanel commandTabjPanel = (CommandTabjPanel) cmdRunnerjTabbedPane.getComponentAt(i);
-      commandTabjPanel.exit();
+      commandTabjPanel.saveHistory();
+      Cfg.cfg.tabs.add(commandTabjPanel.getName());
+    }
+
+    try {
+      Cfg.cfg.saveCfg();
+    } catch (IOException ex) {
+      Logger.getLogger(JustAConsoleGUI.class.getName()).log(Level.SEVERE, null, ex);
     }
 
     System.exit(0);
@@ -207,14 +372,18 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
   private javax.swing.JMenuItem copyMenuItem;
   private javax.swing.JMenuItem cutMenuItem;
   private javax.swing.JMenuItem deleteMenuItem;
+  private javax.swing.JMenuItem deletejMenuItem;
   private javax.swing.JMenu editMenu;
   private javax.swing.JMenuItem exitMenuItem;
   private javax.swing.JMenu fileMenu;
   private javax.swing.JMenu helpMenu;
+  private javax.swing.JMenuItem jMenuItem1;
   private javax.swing.JMenuBar menuBar;
+  private javax.swing.JMenuItem newjMenuItem;
   private javax.swing.JMenuItem pasteMenuItem;
-  private javax.swing.JMenuItem saveAsMenuItem;
+  private javax.swing.JMenuItem renamejMenuItem;
   private javax.swing.JMenuItem saveMenuItem;
+  private javax.swing.JPopupMenu tabjPopupMenu;
   // End of variables declaration//GEN-END:variables
 
 }

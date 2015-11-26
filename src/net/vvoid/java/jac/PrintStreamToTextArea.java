@@ -16,13 +16,11 @@ public class PrintStreamToTextArea extends PrintStream {
 //  public PrintStreamToTextArea(JTextArea jTextArea) {
 //    this.jTextArea = jTextArea;
 //  }
-
 //  @Override
 //  public void write(int b) throws IOException {
 //    jTextArea.append(String.valueOf((char) b));
 //    jTextArea.setCaretPosition(jTextArea.getDocument().getLength());
 //  }
-
   public PrintStreamToTextArea(OutputStream out) {
     super(out);
   }
