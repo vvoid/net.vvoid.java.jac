@@ -14,7 +14,6 @@ public class Jac {
   public static void main(String[] args) throws IOException {
     JustAConsoleGUI defaultConsole = new JustAConsoleGUI();
     defaultConsole.setVisible(true);
-
   }
 
 }
