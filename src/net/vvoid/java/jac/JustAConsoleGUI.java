@@ -26,8 +26,10 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
       CommandTabjPanel commandTabjPanel = new CommandTabjPanel(new HistoryManager(tab));
       commandTabjPanel.setName(tab);
       cmdRunnerjTabbedPane.add(commandTabjPanel);
-
     }
+
+    this.setLocation(Cfg.cfg.windowPositionX, Cfg.cfg.windowPositionY);
+    this.setSize(Cfg.cfg.windowWidth, Cfg.cfg.windowHeight);
 
     cmdRunnerjTabbedPane.setComponentPopupMenu(tabjPopupMenu);
     clearCmdAndFocus();
@@ -42,8 +44,6 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
 
             JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
             int index = sourceTabbedPane.getSelectedIndex();
-//            System.out.println("Tab changed to: " + sourceTabbedPane.getTitleAt(index));
-//            System.out.println("shown " + commandTabjPanel.getName() + " " + commandTabjPanel.commandjTextField.hashCode());
           }
         });
 
@@ -191,10 +191,17 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
     helpMenu.setMnemonic('h');
     helpMenu.setText("Help");
 
+    contentsMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.CTRL_MASK));
     contentsMenuItem.setMnemonic('c');
     contentsMenuItem.setText("Contents");
+    contentsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        contentsMenuItemActionPerformed(evt);
+      }
+    });
     helpMenu.add(contentsMenuItem);
 
+    aboutMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.CTRL_MASK));
     aboutMenuItem.setMnemonic('a');
     aboutMenuItem.setText("About");
     aboutMenuItem.addActionListener(new java.awt.event.ActionListener() {
@@ -219,7 +226,8 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
       .addComponent(cmdRunnerjTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 459, Short.MAX_VALUE)
     );
 
-    pack();
+    setSize(new java.awt.Dimension(656, 520));
+    setLocationRelativeTo(null);
   }// </editor-fold>//GEN-END:initComponents
 
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
@@ -302,12 +310,22 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
   }//GEN-LAST:event_newjMenuItemActionPerformed
 
   private void cmdRunnerjTabbedPaneComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_cmdRunnerjTabbedPaneComponentShown
-    System.out.println("shown");
 
     cmdRunnerjTabbedPane.repaint();
   }//GEN-LAST:event_cmdRunnerjTabbedPaneComponentShown
 
+  
+  private void contentsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_contentsMenuItemActionPerformed
+    HelpJFrame helpJFrame = new HelpJFrame();
+    helpJFrame.setVisible(true);
+  }//GEN-LAST:event_contentsMenuItemActionPerformed
+
   private void exit() {
+
+    Cfg.cfg.windowPositionX = this.getX();
+    Cfg.cfg.windowPositionY = this.getY();
+    Cfg.cfg.windowWidth = this.getWidth();
+    Cfg.cfg.windowHeight = this.getHeight();
 
     Cfg.cfg.tabs.clear();
     for (int i = 0; i < cmdRunnerjTabbedPane.getTabCount(); i++) {
@@ -332,7 +350,7 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
   public static void main(String args[]) {
     /* Set the Nimbus look and feel */
     //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+    /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
      * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
      */
     try {
@@ -367,7 +385,7 @@ public class JustAConsoleGUI extends javax.swing.JFrame {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JMenuItem aboutMenuItem;
-  private javax.swing.JTabbedPane cmdRunnerjTabbedPane;
+  public javax.swing.JTabbedPane cmdRunnerjTabbedPane;
   private javax.swing.JMenuItem contentsMenuItem;
   private javax.swing.JMenuItem copyMenuItem;
   private javax.swing.JMenuItem cutMenuItem;

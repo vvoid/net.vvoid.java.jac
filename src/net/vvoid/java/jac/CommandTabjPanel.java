@@ -17,7 +17,9 @@ public class CommandTabjPanel extends javax.swing.JPanel {
   private final HistoryManager historyManager;
   private final RunCmdHelper cmdHelper;
 
-  private Set<Integer> keysPressed = new HashSet<>();
+  private final Set<Integer> keysPressed = new HashSet<>();
+
+  private boolean atEndOfListFirstTime;
 
   public HistoryManager getHistoryManager() {
     return historyManager;
@@ -35,9 +37,14 @@ public class CommandTabjPanel extends javax.swing.JPanel {
 
     historyjTable.setModel(historyManager);
     historyjTable.changeSelection(historyjTable.getRowCount() - 1, 0, false, false);
+    historyjTable.setRowSelectionAllowed(true);
 
     cmdHelper = new RunCmdHelper(new OutputStreamToTextArea(outputTextArea));
     cmdHelper.setWorkingDirectory(new File(System.getProperty("user.dir", "C:\\")));
+
+    atEndOfListFirstTime = true;
+
+    commandjTextField.setFocusTraversalKeysEnabled(false);
 
   }
 
@@ -78,10 +85,14 @@ public class CommandTabjPanel extends javax.swing.JPanel {
     commandjScrollPane.setMinimumSize(new java.awt.Dimension(0, 40));
     commandjScrollPane.setPreferredSize(new java.awt.Dimension(0, 0));
 
+    commandjTextField.setBackground(new java.awt.Color(0, 0, 0));
     commandjTextField.setFont(new java.awt.Font("Monospaced", 1, 14)); // NOI18N
-    commandjTextField.setForeground(new java.awt.Color(0, 51, 153));
+    commandjTextField.setForeground(new java.awt.Color(102, 255, 0));
+    commandjTextField.setCaretColor(new java.awt.Color(100, 255, 0));
+    commandjTextField.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
     commandjTextField.setDoubleBuffered(true);
     commandjTextField.setMinimumSize(new java.awt.Dimension(6, 6));
+    commandjTextField.setNextFocusableComponent(commandjTextField);
     commandjTextField.setPreferredSize(new java.awt.Dimension(6, 6));
     commandjTextField.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -96,6 +107,7 @@ public class CommandTabjPanel extends javax.swing.JPanel {
         commandjTextFieldKeyReleased(evt);
       }
     });
+    this.requestFocus();
     commandjScrollPane.setViewportView(commandjTextField);
 
     jPanel1.setBackground(new java.awt.Color(153, 255, 102));
@@ -113,8 +125,10 @@ public class CommandTabjPanel extends javax.swing.JPanel {
     outputjScrollPane.setMinimumSize(new java.awt.Dimension(0, 0));
 
     outputTextArea.setEditable(false);
+    outputTextArea.setBackground(new java.awt.Color(0, 0, 0));
     outputTextArea.setColumns(20);
     outputTextArea.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
+    outputTextArea.setForeground(new java.awt.Color(100, 255, 0));
     outputTextArea.setRows(5);
     outputjScrollPane.setViewportView(outputTextArea);
 
@@ -126,7 +140,9 @@ public class CommandTabjPanel extends javax.swing.JPanel {
     historyjScrollPane.setMinimumSize(new java.awt.Dimension(0, 0));
     historyjScrollPane.setPreferredSize(new java.awt.Dimension(50, 50));
 
+    historyjTable.setBackground(new java.awt.Color(0, 0, 0));
     historyjTable.setFont(new java.awt.Font("Monospaced", 0, 12)); // NOI18N
+    historyjTable.setForeground(new java.awt.Color(100, 255, 0));
     historyjTable.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][] {
         {null}
@@ -171,34 +187,28 @@ public class CommandTabjPanel extends javax.swing.JPanel {
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGap(0, 0, Short.MAX_VALUE)
       .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(verticaljSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE))
+        .addComponent(verticaljSplitPane, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGap(0, 164, Short.MAX_VALUE)
+      .addGap(0, 187, Short.MAX_VALUE)
       .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(verticaljSplitPane, javax.swing.GroupLayout.PREFERRED_SIZE, 164, Short.MAX_VALUE))
+        .addComponent(verticaljSplitPane, javax.swing.GroupLayout.PREFERRED_SIZE, 187, Short.MAX_VALUE))
     );
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(commandjScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE))
-        .addContainerGap())
+      .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+      .addComponent(commandjScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
-        .addContainerGap()
         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(commandjScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap())
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(commandjScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -216,12 +226,16 @@ public class CommandTabjPanel extends javax.swing.JPanel {
     switch (key) {
       case KeyEvent.VK_UP: {
 
+        if (atEndOfListFirstTime) {
+          atEndOfListFirstTime = false;
+          commandjTextField.setText(historyManager.getCurrent());
+          return;
+        }
         commandjTextField.setText(historyManager.up());
         try {
-          historyjTable.setRowSelectionAllowed(true);
           historyjTable.changeSelection(historyManager.getHistoryPosition(), 0, false, false);
         } catch (IllegalArgumentException e) {
-
+          ;
         }
 
         break;
@@ -229,16 +243,26 @@ public class CommandTabjPanel extends javax.swing.JPanel {
       case KeyEvent.VK_DOWN: {
         commandjTextField.setText(historyManager.down());
         try {
-          historyjTable.setRowSelectionAllowed(true);
           historyjTable.changeSelection(historyManager.getHistoryPosition(), 0, false, false);
         } catch (IllegalArgumentException e) {
-          historyjTable.setRowSelectionAllowed(false);
+          ;
         }
 
         break;
       }
       case KeyEvent.VK_TAB: {
-        System.out.println("" + key);
+        boolean backwards = true;
+        if (keysPressed.contains(KeyEvent.VK_SHIFT)) {
+          backwards = false;
+        }
+
+        int position = commandjTextField.getCaretPosition();
+        String cmd = historyManager.complete(commandjTextField.getText(), position, backwards);
+        commandjTextField.setText(cmd);
+        commandjTextField.setCaretPosition(position);
+        atEndOfListFirstTime = false;
+        historyjTable.changeSelection(historyManager.getHistoryPosition(), 0, false, false);
+
         break;
       }
       case KeyEvent.VK_ENTER: {
@@ -250,6 +274,7 @@ public class CommandTabjPanel extends javax.swing.JPanel {
           commandjTextField.setText("");
           historyManager.resetPosition();
           historyjTable.changeSelection(historyManager.getHistoryPosition(), 0, false, false);
+          atEndOfListFirstTime = true;
           return;
         }
       }

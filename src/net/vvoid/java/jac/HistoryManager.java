@@ -115,15 +115,8 @@ public class HistoryManager extends AbstractTableModel {
     commandHistory.remove(i);
   }
 
-  public boolean isLegalPosition(Integer position) {
-    if (position < 0) {
-      return false;
-    }
-    if (position > commandHistory.size() - 1) {
-      return false;
-    }
-
-    return true;
+  public String getCurrent() {
+    return commandHistory.get(historyPosition);
   }
 
   public String upOrDown(boolean up) {
@@ -150,6 +143,8 @@ public class HistoryManager extends AbstractTableModel {
       result = commandHistory.get(historyPosition);
 
     }
+
+    System.out.println("" + result);
     return result;
   }
 
@@ -191,6 +186,51 @@ public class HistoryManager extends AbstractTableModel {
 
   public Integer getHistoryPosition() {
     return historyPosition;
+  }
+
+  public synchronized String complete(String cmd, int position, boolean backward) {
+    String result = "";
+    int oldHistory = historyPosition;
+
+    String matchTo = cmd.substring(0, position);
+    //int entries = commandHistory.size();
+
+    System.out.println("" + historyPosition + " -> " + result);
+
+    if (commandHistory.get(historyPosition).contentEquals(cmd)) {
+      historyPosition = next(historyPosition, backward);
+    }
+
+    for (int i = historyPosition; i >= 0; i = next(i, backward)) {
+      if (i <= 0) {
+        historyPosition = oldHistory;
+        result = commandHistory.get(historyPosition);
+        break;
+      } else if (i >= commandHistory.size()) {
+        historyPosition = oldHistory;
+        result = commandHistory.get(historyPosition);
+        break;
+      }
+
+      String entry = commandHistory.get(i);
+
+      if (entry.startsWith(matchTo)) {
+        historyPosition = i;
+        result = entry;
+        break;
+      }
+
+    }
+    System.out.println("" + historyPosition + " -> " + result);
+    return result;
+  }
+
+  public Integer next(Integer position, boolean backward) {
+    if (backward) {
+      return --position;
+    } else {
+      return ++position;
+    }
   }
 
 }

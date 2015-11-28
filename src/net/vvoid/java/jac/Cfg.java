@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -16,21 +14,28 @@ public class Cfg {
 
   public static Cfg cfg;
 
+  public String author = "Dr. Daniel Georg Kirschner <net.vvoid.java.jac@vvoid.net>";
+  
   public String javaPath = "net.vvoid.java.jac";
   public String homeDir = System.getProperty("user.home");
   public String cfgDir = homeDir;
   public String cfgFile = homeDir + "/" + ".jac.json";
   public String historyFilePrefix = homeDir + "/" + ".jac.history.";
 
+  public int windowPositionX = 0;
+  public int windowPositionY = 0;
+  public int windowWidth = 640;
+  public int windowHeight = 480;
+
   public List<String> tabs = new ArrayList<>();
 
-  private static final ObjectMapper mapper = new ObjectMapper();
+  private static ObjectMapper objectMapper = new ObjectMapper();
 
   public Cfg readCfg() throws IOException {
 
     File file = new File(cfgFile);
     if (file.exists() && file.canRead() && file.isFile()) {
-      cfg = mapper.readValue(file, Cfg.class);
+      cfg = objectMapper.readValue(file, Cfg.class);
       if (cfg == null) {
         return Cfg.newDefaultCfg();
       }
@@ -42,7 +47,7 @@ public class Cfg {
   }
 
   public void saveCfg() throws IOException {
-    mapper.writerWithDefaultPrettyPrinter().writeValue(new File(cfgFile), Cfg.cfg);
+    objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(cfgFile), Cfg.cfg);
   }
 
   public static Cfg newDefaultCfg() throws IOException {
