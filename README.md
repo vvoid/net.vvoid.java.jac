@@ -10,3 +10,5 @@ Features:
 - visual History
 - TAB completion
 
+Dependencies:
+- jackson (2.6.3)
